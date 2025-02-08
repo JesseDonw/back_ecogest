@@ -17,9 +17,10 @@ return new class extends Migration
             $table->string('prenom_agent');
             $table->string('mail_agent')->unique();
             $table->string('mdp_agent');
+            $table->string('photo_agent')->nullable();
             $table->dateTime('date_create_agent')->default(now());
             $table->dateTime('date_del_agent')->nullable();
-            $table->timestamps(); // Ajoute les colonnes created_at et updated_at
+            $table->timestamps(); // created_at et updated_at
         });
     }
 

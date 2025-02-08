@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('localisation', function (Blueprint $table) {
             $table->id();
-            $table->string('location');
+            $table->string('location'); // Stocke "city, country"
             $table->float('latitude');
             $table->float('longitude');
             $table->foreignId('client_id')->constrained('clients')->onDelete('cascade');

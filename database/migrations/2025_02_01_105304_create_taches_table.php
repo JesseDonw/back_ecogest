@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('taches', function (Blueprint $table) {
             $table->id();
-            $table->text('description');
-            $table->string('statut')->default('en attente');
-            $table->dateTime('date_envoie_tache')->nullable();
-            $table->dateTime('date_effectuer_tache')->nullable();
-            $table->string('zone');
-            $table->foreignId('maison_id')->constrained('maisons')->onDelete('cascade');
+            $table->string('nom_tache'); // ✅ Nom de la tâche obligatoire
+            $table->date('date_envoie_tache');// ✅ Date obligatoire
+            $table->string('statut');
+
+            // 🔥 Associe la tâche à une localisation existante
+            $table->foreignId('localisation_id')->constrained('localisation')->onDelete('cascade');
+
             $table->timestamps();
         });
     }

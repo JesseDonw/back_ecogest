@@ -9,18 +9,18 @@ class Localisation extends Model
 {
     use HasFactory;
 
+    // 🔥 Force Laravel à utiliser "localisation" au lieu de "localisations"
     protected $table = 'localisation';
 
     protected $fillable = [
-        'location',
+        'location', // Ville + Pays
         'latitude',
         'longitude',
         'client_id',
     ];
 
-    public function clients()
+    public function client()
     {
-        return $this->hasOne(Client::class);
+        return $this->belongsTo(Client::class);
     }
-
 }

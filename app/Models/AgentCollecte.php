@@ -10,19 +10,26 @@ class AgentCollecte extends Model
 {
     use HasFactory, HasApiTokens;
 
-    protected $table = 'agents'; // Correspond au nom de la table dans votre migration
+    protected $table = 'agents'; // Correspond au nom de la table
 
     protected $fillable = [
         'nom_agent',
         'prenom_agent',
         'mail_agent',
         'mdp_agent',
+        'photo_agent',
         'date_create_agent',
-        'date_del_agent',
+        'statut_agent',
     ];
+
 
     public function notifications()
     {
         return $this->hasMany(Notification::class);
+    }
+
+    public function conversations()
+    {
+        return $this->hasMany(Conversation::class);
     }
 }

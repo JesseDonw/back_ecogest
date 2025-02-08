@@ -3,29 +3,91 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\LocalisationController;
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\TaskController;
+
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
+| Ici, vous pouvez enregistrer les routes API de votre application. Ces routes
+| sont chargées par le RouteServiceProvider et seront automatiquement préfixées
+| avec "/api". Assurez-vous de bien configurer les contrôleurs associés.
 |
 */
 
+/* 🔒 Route protégée pour récupérer l'utilisateur authentifié */
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('register', [AuthController::class, 'register']);
-Route::post('registercli', [AuthController::class, 'registercli']);
+/* ==============================
+ * 📌 AUTHENTIFICATION & INSCRIPTION
+ * ============================== */
+Route::post('register', [AuthController::class, 'register']);          // ✅ Inscription d'un agent
+Route::post('registercli', [AuthController::class, 'registercli']);    // ✅ Inscription d'un client
+Route::post('registeradmin', [AuthController::class, 'registeradmin']);// ✅ Inscription d'un admin
 
-// Route pour la connexion de l'agent
-Route::post('login', [AuthController::class, 'login']);
+Route::post('login', [AuthController::class, 'login']);                // ✅ Connexion d'un agent
+Route::post('logincli', [AuthController::class, 'logincli']);          // ✅ Connexion d'un client
+Route::post('loginadmin', [AuthController::class, 'loginadmin']);      // ✅ Connexion d'un admin
 
-// Route pour la connexion du client
-Route::post('logincli', [AuthController::class, 'logincli']);
+Route::post('/logout', [AuthController::class, 'logout']);             // ✅ Déconnexion
 
-Route::post('storelocation', [LocalisationController::class, 'storelocation']);
+
+/* ==============================
+ * 📌 GESTION DES AGENTS, CLIENTS & ADMINS
+ * ============================== */
+Route::get('/agents', [AuthController::class, 'getAllAgents']);  // ✅ Récupérer tous les agents
+Route::get('/agent/{id}', [AuthController::class, 'getAgent']);  // ✅ Récupérer un agent spécifique
+Route::get('/clients', [AuthController::class, 'getAllClients']); // ✅ Récupérer tous les clients
+Route::get('/client/{id}', [AuthController::class, 'getClient']);// ✅ Récupérer un client spécifique
+Route::get('/admin/{id}', [AuthController::class, 'getAdmin']);  // ✅ Récupérer un administrateur spécifique
+
+Route::put('/agent/{id}', [AuthController::class, 'updateAgent']); // ✅ Mettre à jour un Agent
+Route::delete('/agent/{id}', [AuthController::class, 'deleteAgent']); // ✅ Supprimer un agent spécifique
+
+
+
+/* ==============================
+ * 📌 LOCALISATION DES CLIENTS
+ * ============================== */
+Route::post('/storelocation', [LocalisationController::class, 'storelocation']); // ✅ Ajouter la localisation d'un client
+
+Route::post('/localisations', [LocalisationController::class, 'storeLocation']); // ✅ Ajouter une localisation
+Route::get('/localisations', [LocalisationController::class, 'getAll']);         // ✅ Récupérer toutes les localisations
+Route::get('/localisations/{id}', [LocalisationController::class, 'getById']);   // ✅ Récupérer une localisation spécifique
+Route::put('/localisations/{id}', [LocalisationController::class, 'updateLocation']); // ✅ Mettre à jour une localisation
+Route::delete('/localisations/{id}', [LocalisationController::class, 'deleteLocation']); // ✅ Supprimer une localisation
+
+
+/* ==============================
+ * 📌 GESTION DES MESSAGES & DISCUSSIONS
+ * ============================== */
+Route::post('/start-conversation', [ChatController::class, 'startConversation']); // ✅ Démarrer une conversation
+Route::post('/send-message', [ChatController::class, 'sendMessage']);             // ✅ Envoyer un message
+Route::get('/messages/{conversationId}', [ChatController::class, 'getMessages']); // ✅ Récupérer les messages d'une conversation
+Route::get('/conversations/{conversationId}/messages', [ChatController::class, 'getMessages']); // Récupérer les messages d'une conversation spécifique
+
+
+/* ==============================
+ * 📌 GESTION DES TÂCHES
+ * ============================== */
+Route::get('/taches', [TaskController::class, 'index']);         // ✅ Récupérer toutes les tâches
+Route::post('/taches', [TaskController::class, 'store']);        // ✅ Ajouter une tâche
+Route::get('/taches/{id}', [TaskController::class, 'show']);     // ✅ Récupérer une tâche spécifique
+Route::put('/taches/{id}', [TaskController::class, 'updateTache']);   // ✅ Mettre à jour une tâche
+Route::delete('/taches/{id}', [TaskController::class, 'deleteTache']);// ✅ Supprimer une tâche
+Route::get('/taches', [TaskController::class, 'getAll']);         // ✅ Récupérer toutes les localisations
+Route::patch('/taches/{id}/statut', [TaskController::class, 'updateStatut']); // ✅ Mettre à jour uniquement le statut d'une tâche
+
+
+
+    Route::post('/send-message', [MessageController::class, 'sendMessage']);
+Route::middleware('auth:sanctum')->get('/fetch-messages', [MessageController::class, 'getMessages']);
+
+

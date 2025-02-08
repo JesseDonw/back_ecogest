@@ -12,20 +12,22 @@ class Tache extends Model
     protected $table = 'taches';
 
     protected $fillable = [
-        'description',
+        'nom_tache', // ✅ Nom de la tâche
+        'date_envoie_tache', // ✅ Date de la tâche
+        'localisation_id', // ✅ Localisation associée
         'statut',
-        'date_envoie_tache',
-        'date_effectuer_tache',
-        'zone',
     ];
+
+    /**
+     * ✅ Relation avec la localisation.
+     */
+    public function localisation()
+    {
+        return $this->belongsTo(Localisation::class);
+    }
 
     public function agents_collecte()
     {
         return $this->belongsTo(AgentCollecte::class);
-    }
-
-    public function maisons()
-    {
-        return $this->belongsTo(Maison::class);
     }
 }
