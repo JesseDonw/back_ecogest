@@ -50,7 +50,7 @@ Route::get('/admin/{id}', [AuthController::class, 'getAdmin']);  // ✅ Récupé
 
 Route::put('/agent/{id}', [AuthController::class, 'updateAgent']); // ✅ Mettre à jour un Agent
 Route::delete('/agent/{id}', [AuthController::class, 'deleteAgent']); // ✅ Supprimer un agent spécifique
-
+Route::get('/admins', [AuthController::class, 'getAllAdmin']);
 
 
 /* ==============================
@@ -65,6 +65,7 @@ Route::put('/localisations/{id}', [LocalisationController::class, 'updateLocatio
 Route::delete('/localisations/{id}', [LocalisationController::class, 'deleteLocation']); // ✅ Supprimer une localisation
 
 
+
 /* ==============================
  * 📌 GESTION DES MESSAGES & DISCUSSIONS
  * ============================== */
@@ -77,17 +78,31 @@ Route::get('/conversations/{conversationId}/messages', [ChatController::class, '
 /* ==============================
  * 📌 GESTION DES TÂCHES
  * ============================== */
-Route::get('/taches', [TaskController::class, 'index']);         // ✅ Récupérer toutes les tâches
+Route::get('/taches', [TaskController::class, 'getAll']);         // ✅ Récupérer toutes les tâches
 Route::post('/taches', [TaskController::class, 'store']);        // ✅ Ajouter une tâche
 Route::get('/taches/{id}', [TaskController::class, 'show']);     // ✅ Récupérer une tâche spécifique
 Route::put('/taches/{id}', [TaskController::class, 'updateTache']);   // ✅ Mettre à jour une tâche
 Route::delete('/taches/{id}', [TaskController::class, 'deleteTache']);// ✅ Supprimer une tâche
-Route::get('/taches', [TaskController::class, 'getAll']);         // ✅ Récupérer toutes les localisations
 Route::patch('/taches/{id}/statut', [TaskController::class, 'updateStatut']); // ✅ Mettre à jour uniquement le statut d'une tâche
+// Récupérer les tâches en attente
+Route::get('/taches/en-attente', [TaskController::class, 'getPendingTasks']);
+Route::get('/taches/statut/{status}', [TaskController::class, 'getTasksByStatus']);  // Récupérer les tâches par statut
+Route::get('/taches/tri/localisation', [TaskController::class, 'getTasksSortedByLocation']);  // Trier les tâches par localisation
+Route::post('/taches/plus-proche', [TaskController::class, 'getNearestTasks']);  // Récupérer les tâches proches
+Route::put('/taches/{id}/validate', [TaskController::class, 'validateTache']);  // Valider une tâche
+// Route protégée par Sanctum pour récupérer les tâches accomplies par l'agent
+Route::get('/taches/done', [TaskController::class, 'getDoneTasks']);
 
 
 
-    Route::post('/send-message', [MessageController::class, 'sendMessage']);
+
+
+Route::middleware('auth:sanctum')->post('/send-message', [MessageController::class, 'sendMessage']);
+
 Route::middleware('auth:sanctum')->get('/fetch-messages', [MessageController::class, 'getMessages']);
+
+Route::middleware('auth:sanctum')->get('/test-auth', function (Request $request) {
+    return response()->json(['user' => Auth::user()]);
+});
 
 

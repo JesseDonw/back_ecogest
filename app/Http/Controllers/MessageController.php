@@ -7,39 +7,48 @@ use App\Models\Client;
 use App\Models\Administrateur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+
 
 class MessageController extends Controller
 {
 
     public function sendmessage(Request $request)
     {
-        $request->validate([
-            'receiver_id' => 'required|integer',
-            'receiver_type' => 'required|string|in:App\Models\Client,App\Models\Administrateur,App\Models\AgentCollecte',
-            'sender_id' => 'required|integer',
-            'sender_type' => 'required|string|in:App\Models\Client,App\Models\Administrateur,App\Models\AgentCollecte',
-            'content' => 'required|string',
-        ]);
+        Log::info('sendMessage a été appelé');
 
-        $user = Auth::user();
-        if (!$user) {
-            return response()->json(['message' => 'Utilisateur non authentifié'], 401);
+        try {
+            $user = Auth::user();
+            if (!$user) {
+                Log::error('Utilisateur non authentifié');
+                return response()->json(['message' => 'Utilisateur non authentifié'], 401);
+            }
+
+            Log::info('Création du message');
+            $message = Message::create([
+                'sender_id' => $request->sender_id,
+                'sender_type' => $request->sender_type,
+                'receiver_id' => $request->receiver_id,
+                'receiver_type' => $request->receiver_type,
+                'content' => $request->content,
+                'is_read' => false,
+            ]);
+
+            Log::info('Message envoyé avec succès');
+            return response()->json([
+                'message' => 'Message envoyé avec succès',
+                'data' => $message
+            ], 201);
+
+        } catch (\Exception $e) {
+            Log::error('Erreur serveur : ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Erreur serveur',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $message = Message::create([
-            'sender_id' => $request->sender_id,
-            'sender_type' => $request->sender_type,
-            'receiver_id' => $request->receiver_id,
-            'receiver_type' => $request->receiver_type,
-            'content' => $request->content,
-            'is_read' => false,
-        ]);
-
-        return response()->json([
-            'message' => 'Message envoyé avec succès',
-            'data' => $message
-        ], 201);
     }
+
 
     public function getMessages(Request $request)
     {

@@ -25,7 +25,7 @@ class LocalisationController extends Controller
             return response()->json(['errors' => $validator->errors()], 400);
         }
 
-        // ✅ Création de la localisation (sans zone)
+        // ✅ Création de la localisation
         $localisation = Localisation::create([
             'location' => $request->location,
             'latitude' => $request->latitude,
@@ -78,7 +78,7 @@ class LocalisationController extends Controller
             return response()->json(['message' => 'Localisation non trouvée'], 404);
         }
 
-        // 🔍 Validation des nouvelles données (sans zone)
+        // 🔍 Validation des nouvelles données
         $validator = Validator::make($request->all(), [
             'location' => 'sometimes|string|max:255',
             'latitude' => 'sometimes|numeric',

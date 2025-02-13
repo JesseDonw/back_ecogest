@@ -95,36 +95,64 @@ class AuthController extends Controller
         ], 201);
     }
 
+
     public function registeradmin(Request $request)
-    {
+{
+    try {
         $validator = Validator::make($request->all(), [
             'nom_admin' => 'required|string|max:255',
             'prenom_admin' => 'required|string|max:255',
             'mail_admin' => 'required|email|unique:administrateurs,mail_admin',
             'mdp_admin' => 'required|string|min:8',
+            'photo_admin' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',  // Ajout de la validation de la photo
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 400);
         }
 
+        $photoPath = null;
+
+        // Gestion de l'upload de la photo si elle est fournie
+        if ($request->hasFile('photo_admin')) {
+            $file = $request->file('photo_admin');
+            $allowedExtensions = ['jpg', 'jpeg', 'png'];
+            if (!in_array($file->getClientOriginalExtension(), $allowedExtensions)) {
+                return response()->json(['error' => 'L\'image doit être au format JPG, JPEG ou PNG uniquement.'], 400);
+            }
+            $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $photoPath = $file->storeAs('admin_photos', $fileName, 'public');
+        }
+
+        // Création de l'administrateur
         $admin = Administrateur::create([
             'nom_admin' => $request->nom_admin,
             'prenom_admin' => $request->prenom_admin,
             'mail_admin' => $request->mail_admin,
             'mdp_admin' => Hash::make($request->mdp_admin),
+            'photo_admin' => $photoPath,
             'date_create_admin' => now(),
             'statut_admin' => 'actif',
         ]);
 
+        // Génération du token d'authentification
         $token = $admin->createToken('API Token')->plainTextToken;
+        $photoUrl = $photoPath ? asset('storage/' . $photoPath) : null;
 
+        // Retour de la réponse JSON
         return response()->json([
-            'message' => 'Admin créé avec succès',
-            'admin_id' => $admin->id,
+            'message' => 'Administrateur créé avec succès',
+            'admin' => $admin,
+            'photo_url' => $photoUrl,
             'token' => $token
         ], 201);
+
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
     }
+}
+
+
 
     public function login(Request $request)
     {
@@ -259,7 +287,7 @@ class AuthController extends Controller
         return response()->json($client, 200);
     }
 
-    public function getAdmin($id)
+    public function getAdmins($id)
     {
         $admin = Administrateur::find($id);
         if (!$admin) {
@@ -267,6 +295,17 @@ class AuthController extends Controller
         }
         return response()->json($admin, 200);
     }
+
+    public function getAllAdmin()
+    {
+        try {
+            $admins = Administrateur::all();  // Récupère tous les administrateurs
+            return response()->json($admins, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Erreur lors de la récupération des administrateurs', 'details' => $e->getMessage()], 500);
+        }
+    }
+
 
     public function updateAgent(Request $request, $id)
     {

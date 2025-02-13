@@ -22,6 +22,11 @@ class AgentCollecte extends Model
         'statut_agent',
     ];
 
+    // ✅ Relation entre AgentCollecte et Tache
+    public function taches()
+    {
+        return $this->hasMany(Tache::class, 'agent_id');
+    }
 
     public function notifications()
     {

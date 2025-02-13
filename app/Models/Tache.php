@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,6 +16,7 @@ class Tache extends Model
         'nom_tache', // ✅ Nom de la tâche
         'date_envoie_tache', // ✅ Date de la tâche
         'localisation_id', // ✅ Localisation associée
+        'agent_id', // ✅ ID de l'agent collecteur (ajouté)
         'statut',
     ];
 
@@ -23,11 +25,14 @@ class Tache extends Model
      */
     public function localisation()
     {
-        return $this->belongsTo(Localisation::class);
+        return $this->belongsTo(Localisation::class, 'localisation_id');
     }
 
-    public function agents_collecte()
+    /**
+     * ✅ Relation avec un agent de collecte.
+     */
+    public function agent()
     {
-        return $this->belongsTo(AgentCollecte::class);
+        return $this->belongsTo(AgentCollecte::class, 'agent_id');
     }
 }
