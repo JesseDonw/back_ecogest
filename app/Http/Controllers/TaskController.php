@@ -241,6 +241,34 @@ public function getDoneTasks(Request $request)
     return response()->json($tasks, 200);
 }
 
+public function getTasksCountSortedByLocation()
+{
+    // Compte le nombre de tâches "en attente"
+    $pendingTasksCount = Tache::with('localisation')
+        ->join('localisation', 'taches.localisation_id', '=', 'localisation.id') // Jointure avec la table localisation
+        ->where('taches.statut', 'en attente')  // Filtre par le statut "en attente"
+        ->orderBy('localisation.location', 'asc')
+        ->count();
+
+    // Compte le nombre de tâches "terminées"
+    $completedTasksCount = Tache::with('localisation')
+        ->join('localisation', 'taches.localisation_id', '=', 'localisation.id') // Jointure avec la table localisation
+        ->where('taches.statut', 'terminée')  // Filtre par le statut "terminée"
+        ->orderBy('localisation.location', 'asc')
+        ->count();
+
+    // Compte le nombre total de tâches
+    $totalTasksCount = Tache::with('localisation')
+        ->join('localisation', 'taches.localisation_id', '=', 'localisation.id') // Jointure avec la table localisation
+        ->count();
+
+    return response()->json([
+        'total_tasks' => $totalTasksCount,
+        'pending_tasks' => $pendingTasksCount,
+        'completed_tasks' => $completedTasksCount
+    ], 200);
+}
+
 
 
 

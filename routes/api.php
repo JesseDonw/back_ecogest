@@ -92,6 +92,9 @@ Route::post('/taches/plus-proche', [TaskController::class, 'getNearestTasks']); 
 Route::put('/taches/{id}/validate', [TaskController::class, 'validateTache']);  // Valider une tâche
 // Route protégée par Sanctum pour récupérer les tâches accomplies par l'agent
 Route::get('/taches/done', [TaskController::class, 'getDoneTasks']);
+// Nombre de tache 
+Route::get('/tasks/count/sorted-by-location', [TaskController::class, 'getTasksCountSortedByLocation']);
+
 
 
 
