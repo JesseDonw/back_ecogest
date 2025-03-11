@@ -51,6 +51,7 @@ Route::get('/admin/{id}', [AuthController::class, 'getAdmin']);  // ✅ Récupé
 Route::put('/agent/{id}', [AuthController::class, 'updateAgent']); // ✅ Mettre à jour un Agent
 Route::delete('/agent/{id}', [AuthController::class, 'deleteAgent']); // ✅ Supprimer un agent spécifique
 Route::get('/admins', [AuthController::class, 'getAllAdmin']);
+Route::delete('/admin/{id}', [AuthController::class, 'deleteAdmin']); // ✅ Supprimer un agent spécifique
 
 
 /* ==============================
@@ -92,7 +93,7 @@ Route::post('/taches/plus-proche', [TaskController::class, 'getNearestTasks']); 
 Route::put('/taches/{id}/validate', [TaskController::class, 'validateTache']);  // Valider une tâche
 // Route protégée par Sanctum pour récupérer les tâches accomplies par l'agent
 Route::get('/taches/done', [TaskController::class, 'getDoneTasks']);
-// Nombre de tache 
+// Nombre de tache
 Route::get('/tasks/count/sorted-by-location', [TaskController::class, 'getTasksCountSortedByLocation']);
 
 

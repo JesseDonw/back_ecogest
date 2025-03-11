@@ -230,6 +230,19 @@ class AuthController extends Controller
         return response()->json(['message' => 'Identifiants incorrects'], 401);
     }
 
+     // Suppression d'un Admin
+    public function deleteAdmin($id)
+    {
+        $admin = Administrateur::find($id);
+
+        if (!$admin) {
+            return response()->json(['message' => 'Admin non trouvé'], 404);
+        }
+
+        $admin->delete();
+
+        return response()->json(['message' => 'Admin supprimé avec succès'], 200);
+    }
 
     // Suppression d'un Agent Collecte
     public function deleteAgent($id)
